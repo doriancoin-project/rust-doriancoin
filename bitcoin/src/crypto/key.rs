@@ -359,7 +359,7 @@ impl PrivateKey {
     pub fn fmt_wif(&self, fmt: &mut dyn fmt::Write) -> fmt::Result {
         let mut ret = [0; 34];
         ret[0] = match self.network {
-            Network::Bitcoin => 128,
+            Network::Bitcoin => 176,
             Network::Testnet | Network::Signet | Network::Regtest => 239,
         };
         ret[1..33].copy_from_slice(&self.inner[..]);
@@ -393,7 +393,7 @@ impl PrivateKey {
         };
 
         let network = match data[0] {
-            128 => Network::Bitcoin,
+            176 => Network::Bitcoin,
             239 => Network::Testnet,
             x   => {
                 return Err(Error::Base58(base58::Error::InvalidAddressVersion(x)));
@@ -789,11 +789,21 @@ mod tests {
             PrivateKey::from_str("cVt4o7BGAig1UXywgGSmARhxMdzP5qvQsxKkSsc1XEkw3tDTQFpy").unwrap();
         assert_eq!(&sk.to_wif(), &sk_str.to_wif());
 
-        // mainnet uncompressed
-        let sk = PrivateKey::from_wif("5JYkZjmN7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3").unwrap();
+        // mainnet uncompressed - construct from raw key bytes since WIF version differs
+        let raw_key = [
+            0x60, 0x6c, 0x29, 0xf8, 0xb7, 0xfa, 0x2a, 0xe4,
+            0x19, 0x2d, 0xff, 0xde, 0x51, 0x29, 0x85, 0x2a,
+            0x60, 0x02, 0x1b, 0x4e, 0x89, 0x12, 0x25, 0xa6,
+            0xa9, 0xd8, 0xe8, 0x4e, 0xfd, 0x5a, 0xa6, 0x07,
+        ];
+        let sk = PrivateKey {
+            compressed: false,
+            network: Bitcoin,
+            inner: secp256k1::SecretKey::from_slice(&raw_key).unwrap(),
+        };
         assert_eq!(sk.network, Bitcoin);
         assert!(!sk.compressed);
-        assert_eq!(&sk.to_wif(), "5JYkZjmN7PVMjJUfJWfRFwtuXTGB439XV6faajeHPAM9Z2PT2R3");
+        assert_eq!(&sk.to_wif(), "6urV2sJu1oxECgNWpLTP3Lg5UvpeFqbZFn4kHvfK6cfmEvQp2xf");
 
         let secp = Secp256k1::new();
         let mut pk = sk.public_key(&secp);
@@ -801,7 +811,7 @@ mod tests {
         assert_eq!(&pk.to_string(), "042e58afe51f9ed8ad3cc7897f634d881fdbe49a81564629ded8156bebd2ffd1af191923a2964c177f5b5923ae500fca49e99492d534aa3759d6b25a8bc971b133");
         assert_eq!(pk, PublicKey::from_str("042e58afe51f9ed8ad3cc7897f634d881fdbe49a81564629ded8156bebd2ffd1af191923a2964c177f5b5923ae500fca49e99492d534aa3759d6b25a8bc971b133").unwrap());
         let addr = Address::p2pkh(&pk, sk.network);
-        assert_eq!(&addr.to_string(), "LavNBTQTQoCdMjt7WvW4ZdUe85KRatoP76");
+        assert_eq!(&addr.to_string(), "DLqWTW3GdYrrdwNZ5NWKqNaUnzgSo7z9Yg");
         pk.compressed = true;
         assert_eq!(&pk.to_string(), "032e58afe51f9ed8ad3cc7897f634d881fdbe49a81564629ded8156bebd2ffd1af");
         assert_eq!(pk, PublicKey::from_str("032e58afe51f9ed8ad3cc7897f634d881fdbe49a81564629ded8156bebd2ffd1af").unwrap());

@@ -23,7 +23,7 @@
 //! let network = Network::Bitcoin;
 //! let bytes = serialize(&network.magic());
 //!
-//! assert_eq!(&bytes[..], &[0xF9, 0xBE, 0xB4, 0xD9]);
+//! assert_eq!(&bytes[..], &[0xD0, 0xC1, 0xB0, 0xD1]);
 //! ```
 
 use core::borrow::{Borrow, BorrowMut};
@@ -86,7 +86,7 @@ impl Network {
     /// use bitcoin::network::constants::{Network, Magic};
     /// use std::convert::TryFrom;
     ///
-    /// assert_eq!(Ok(Network::Bitcoin), Network::try_from(Magic::from_bytes([0xFB, 0xC0, 0xB6, 0xDB])));
+    /// assert_eq!(Ok(Network::Bitcoin), Network::try_from(Magic::from_bytes([0xD0, 0xC1, 0xB0, 0xD1])));
     /// assert_eq!(None, Network::from_magic(Magic::from_bytes([0xFF, 0xFF, 0xFF, 0xFF])));
     /// ```
     pub fn from_magic(magic: Magic) -> Option<Network> { Network::try_from(magic).ok() }
@@ -100,7 +100,7 @@ impl Network {
     /// use bitcoin::network::constants::{Network, Magic};
     ///
     /// let network = Network::Bitcoin;
-    /// assert_eq!(network.magic(), Magic::from_bytes([0xFB, 0xC0, 0xB6, 0xDB]));
+    /// assert_eq!(network.magic(), Magic::from_bytes([0xD0, 0xC1, 0xB0, 0xD1]));
     /// ```
     pub fn magic(self) -> Magic { Magic::from(self) }
 
@@ -248,14 +248,14 @@ impl TryFrom<ChainHash> for Network {
 pub struct Magic([u8; 4]);
 
 impl Magic {
-    /// Bitcoin mainnet network magic bytes.
-    pub const BITCOIN: Self = Self([0xFB, 0xC0, 0xB6, 0xDB]);
-    /// Bitcoin testnet network magic bytes.
-    pub const TESTNET: Self = Self([0xFD, 0xD2, 0xC8, 0xF1]);
-    /// Bitcoin signet network magic bytes.
+    /// Doriancoin mainnet network magic bytes.
+    pub const BITCOIN: Self = Self([0xD0, 0xC1, 0xB0, 0xD1]);
+    /// Doriancoin testnet network magic bytes.
+    pub const TESTNET: Self = Self([0xD1, 0xD2, 0xC0, 0xD2]);
+    /// Doriancoin signet network magic bytes.
     pub const SIGNET: Self = Self([0x0A, 0x03, 0xCF, 0x40]);
-    /// Bitcoin regtest network magic bytes.
-    pub const REGTEST: Self = Self([0xFA, 0xBF, 0xB5, 0xDA]);
+    /// Doriancoin regtest network magic bytes.
+    pub const REGTEST: Self = Self([0xD2, 0xB0, 0xB1, 0xD3]);
 
     /// Create network magic from bytes.
     pub fn from_bytes(bytes: [u8; 4]) -> Magic { Magic(bytes) }
@@ -553,15 +553,15 @@ mod tests {
 
     #[test]
     fn serialize_test() {
-        assert_eq!(serialize(&Network::Bitcoin.magic()), &[0xfb, 0xc0, 0xb6, 0xdb]);
-        assert_eq!(serialize(&Network::Testnet.magic()), &[0xfd, 0xd2, 0xc8, 0xf1]);
+        assert_eq!(serialize(&Network::Bitcoin.magic()), &[0xD0, 0xC1, 0xB0, 0xD1]);
+        assert_eq!(serialize(&Network::Testnet.magic()), &[0xD1, 0xD2, 0xC0, 0xD2]);
         assert_eq!(serialize(&Network::Signet.magic()), &[0x0a, 0x03, 0xcf, 0x40]);
-        assert_eq!(serialize(&Network::Regtest.magic()), &[0xfa, 0xbf, 0xb5, 0xda]);
+        assert_eq!(serialize(&Network::Regtest.magic()), &[0xD2, 0xB0, 0xB1, 0xD3]);
 
-        assert_eq!(deserialize(&[0xfb, 0xc0, 0xb6, 0xdb]).ok(), Some(Network::Bitcoin.magic()));
-        assert_eq!(deserialize(&[0xfd, 0xd2, 0xc8, 0xf1]).ok(), Some(Network::Testnet.magic()));
+        assert_eq!(deserialize(&[0xD0, 0xC1, 0xB0, 0xD1]).ok(), Some(Network::Bitcoin.magic()));
+        assert_eq!(deserialize(&[0xD1, 0xD2, 0xC0, 0xD2]).ok(), Some(Network::Testnet.magic()));
         assert_eq!(deserialize(&[0x0a, 0x03, 0xcf, 0x40]).ok(), Some(Network::Signet.magic()));
-        assert_eq!(deserialize(&[0xfa, 0xbf, 0xb5, 0xda]).ok(), Some(Network::Regtest.magic()));
+        assert_eq!(deserialize(&[0xD2, 0xB0, 0xB1, 0xD3]).ok(), Some(Network::Regtest.magic()));
     }
 
     #[test]
@@ -644,9 +644,9 @@ mod tests {
     #[test]
     fn magic_from_str() {
         let known_network_magic_strs = [
-            ("fbc0b6db", Network::Bitcoin),
-            ("fdd2c8f1", Network::Testnet),
-            ("fabfb5da", Network::Regtest),
+            ("d0c1b0d1", Network::Bitcoin),
+            ("d1d2c0d2", Network::Testnet),
+            ("d2b0b1d3", Network::Regtest),
             ("0a03cf40", Network::Signet),
         ];
 

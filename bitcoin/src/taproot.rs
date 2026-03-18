@@ -1910,6 +1910,7 @@ mod test {
     }
 
     #[test]
+    #[ignore = "BIP-341 test vectors use bc1p addresses which are not valid for Doriancoin"]
     fn bip_341_tests() {
         fn process_script_trees(
             v: &serde_json::Value,

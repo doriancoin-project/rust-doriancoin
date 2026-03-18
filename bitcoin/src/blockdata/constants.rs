@@ -8,6 +8,7 @@
 //! single transaction.
 //!
 
+use core::convert::TryFrom;
 use core::default::Default;
 
 use bitcoin_internals::impl_array_newtype;
@@ -40,10 +41,10 @@ pub const MIN_TRANSACTION_WEIGHT: u32 = 4 * 60;
 pub const WITNESS_SCALE_FACTOR: usize = 4;
 /// The maximum allowed number of signature check operations in a block.
 pub const MAX_BLOCK_SIGOPS_COST: i64 = 80_000;
-/// Mainnet (bitcoin) pubkey address prefix.
-pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 48; // 0x30
-/// Mainnet (bitcoin) script address prefix.
-pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 50; // 0x32
+/// Mainnet (doriancoin) pubkey address prefix.
+pub const PUBKEY_ADDRESS_PREFIX_MAIN: u8 = 30; // 0x1e
+/// Mainnet (doriancoin) script address prefix.
+pub const SCRIPT_ADDRESS_PREFIX_MAIN: u8 = 28; // 0x1c
 /// Test (testnet, signet, regtest) pubkey address prefix.
 pub const PUBKEY_ADDRESS_PREFIX_TEST: u8 = 111; // 0x6f
 /// Test (testnet, signet, regtest) script address prefix.
@@ -62,7 +63,7 @@ pub const COINBASE_MATURITY: u32 = 100;
 /// if you are doing anything remotely sane with monetary values).
 pub const MAX_MONEY: u64 = 84_000_000 * COIN_VALUE;
 
-/// Constructs and returns the coinbase (and only) transaction of the Bitcoin genesis block.
+/// Constructs and returns the coinbase (and only) transaction of the Doriancoin genesis block.
 fn bitcoin_genesis_tx() -> Transaction {
     // Base
     let mut ret = Transaction {
@@ -73,9 +74,11 @@ fn bitcoin_genesis_tx() -> Transaction {
     };
 
     // Inputs
+    let msg: &[u8] = b"LA Times 08/Mar/2014 For Dorian Nakamoto, bitcoin article brings denials, intrigue";
+    let push_msg = <&script::PushBytes>::try_from(msg).expect("genesis coinbase message fits");
     let in_script = script::Builder::new().push_int(486604799)
                                           .push_int_non_minimal(4)
-                                          .push_slice(b"NY Times 05/Oct/2011 Steve Jobs, Apple\xE2\x80\x99s Visionary, Dies at 56")
+                                          .push_slice(push_msg)
                                           .into_script();
     ret.input.push(TxIn {
         previous_output: OutPoint::null(),
@@ -111,9 +114,9 @@ pub fn genesis_block(network: Network) -> Block {
                     version: block::Version::ONE,
                     prev_blockhash: Hash::all_zeros(),
                     merkle_root,
-                    time: 1317972665,
+                    time: 1394325760,
                     bits: CompactTarget::from_consensus(0x1e0ffff0),
-                    nonce: 2084524493
+                    nonce: 385834689
                 },
                 txdata,
             }
@@ -124,9 +127,9 @@ pub fn genesis_block(network: Network) -> Block {
                     version: block::Version::ONE,
                     prev_blockhash: Hash::all_zeros(),
                     merkle_root,
-                    time: 1486949366,
+                    time: 1394325759,
                     bits: CompactTarget::from_consensus(0x1e0ffff0),
-                    nonce: 293345
+                    nonce: 149343
                 },
                 txdata,
             }
@@ -137,9 +140,9 @@ pub fn genesis_block(network: Network) -> Block {
                     version: block::Version::ONE,
                     prev_blockhash: Hash::all_zeros(),
                     merkle_root,
-                    time: 1598918400,
-                    bits: CompactTarget::from_consensus(0x1e0377ae),
-                    nonce: 52613770
+                    time: 1394325759,
+                    bits: CompactTarget::from_consensus(0x1e0ffff0),
+                    nonce: 149343
                 },
                 txdata,
             }
@@ -150,9 +153,9 @@ pub fn genesis_block(network: Network) -> Block {
                     version: block::Version::ONE,
                     prev_blockhash: Hash::all_zeros(),
                     merkle_root,
-                    time: 1296688602,
-                    bits: CompactTarget::from_consensus(0x207fffff),
-                    nonce: 2
+                    time: 1394325759,
+                    bits: CompactTarget::from_consensus(0x1e0ffff0),
+                    nonce: 149343
                 },
                 txdata,
             }
@@ -167,15 +170,14 @@ impl_array_newtype!(ChainHash, u8, 32);
 impl_bytes_newtype!(ChainHash, 32);
 
 impl ChainHash {
-    // Mainnet value can be verified at https://github.com/lightning/bolts/blob/master/00-introduction.md
-    /// `ChainHash` for mainnet bitcoin.
-    pub const BITCOIN: Self = Self([226, 191, 4, 126, 126, 90, 25, 26, 164, 239, 52, 211, 20, 151, 157, 201, 152, 110, 15, 25, 37, 30, 218, 186, 89, 64, 253, 31, 227, 101, 167, 18]);
-    /// `ChainHash` for testnet bitcoin.
-    pub const TESTNET: Self = Self([160, 41, 62, 78, 235, 61, 166, 230, 245, 111, 129, 237, 89, 95, 87, 136, 13, 26, 33, 86, 158, 19, 238, 253, 217, 81, 40, 75, 90, 98, 102, 73]);
-    /// `ChainHash` for signet bitcoin.
-    pub const SIGNET: Self = Self([246, 30, 238, 59, 99, 163, 128, 164, 119, 160, 99, 175, 50, 178, 187, 201, 124, 159, 249, 240, 31, 44, 66, 37, 233, 115, 152, 129, 8, 0, 0, 0]);
-    /// `ChainHash` for regtest bitcoin.
-    pub const REGTEST: Self = Self([6, 34, 110, 70, 17, 26, 11, 89, 202, 175, 18, 96, 67, 235, 91, 191, 40, 195, 79, 58, 94, 51, 42, 31, 199, 178, 183, 60, 241, 136, 145, 15]);
+    /// `ChainHash` for mainnet Doriancoin.
+    pub const BITCOIN: Self = Self([185, 209, 231, 209, 199, 35, 6, 203, 181, 113, 2, 65, 27, 9, 198, 235, 226, 254, 197, 105, 125, 8, 86, 116, 11, 210, 123, 39, 94, 162, 29, 210]);
+    /// `ChainHash` for testnet Doriancoin.
+    pub const TESTNET: Self = Self([81, 191, 47, 89, 253, 225, 142, 91, 150, 92, 50, 82, 24, 40, 69, 99, 34, 114, 14, 95, 188, 205, 117, 123, 221, 159, 181, 78, 70, 105, 119, 112]);
+    /// `ChainHash` for signet Doriancoin.
+    pub const SIGNET: Self = Self([81, 191, 47, 89, 253, 225, 142, 91, 150, 92, 50, 82, 24, 40, 69, 99, 34, 114, 14, 95, 188, 205, 117, 123, 221, 159, 181, 78, 70, 105, 119, 112]);
+    /// `ChainHash` for regtest Doriancoin.
+    pub const REGTEST: Self = Self([81, 191, 47, 89, 253, 225, 142, 91, 150, 92, 50, 82, 24, 40, 69, 99, 34, 114, 14, 95, 188, 205, 117, 123, 221, 159, 181, 78, 70, 105, 119, 112]);
 
     /// Returns the hash of the `network` genesis block for use as a chain hash.
     ///
@@ -204,7 +206,7 @@ mod test {
         assert_eq!(gen.input[0].previous_output.txid, Hash::all_zeros());
         assert_eq!(gen.input[0].previous_output.vout, 0xFFFFFFFF);
         assert_eq!(serialize(&gen.input[0].script_sig),
-                   hex!("4804ffff001d0104404e592054696d65732030352f4f63742f32303131205374657665204a6f62732c204170706c65e280997320566973696f6e6172792c2044696573206174203536"));
+                   hex!("5b04ffff001d01044c524c412054696d65732030382f4d61722f3230313420466f7220446f7269616e204e616b616d6f746f2c20626974636f696e2061727469636c65206272696e67732064656e69616c732c20696e747269677565"));
 
         assert_eq!(gen.input[0].sequence, Sequence::MAX);
         assert_eq!(gen.output.len(), 1);
@@ -213,7 +215,7 @@ mod test {
         assert_eq!(gen.output[0].value, 50 * COIN_VALUE);
         assert_eq!(gen.lock_time, absolute::LockTime::ZERO);
 
-        assert_eq!(gen.wtxid().to_string(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
+        assert_eq!(gen.wtxid().to_string(), "a27b7d0a286e46fae3cb7e5b1eae6001fc1b15afee2f6a147291e7eb19746d5d");
     }
 
     #[test]
@@ -222,12 +224,12 @@ mod test {
 
         assert_eq!(gen.header.version, block::Version::ONE);
         assert_eq!(gen.header.prev_blockhash, Hash::all_zeros());
-        assert_eq!(gen.header.merkle_root.to_string(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
+        assert_eq!(gen.header.merkle_root.to_string(), "a27b7d0a286e46fae3cb7e5b1eae6001fc1b15afee2f6a147291e7eb19746d5d");
 
-        assert_eq!(gen.header.time, 1317972665);
+        assert_eq!(gen.header.time, 1394325760);
         assert_eq!(gen.header.bits, CompactTarget::from_consensus(0x1e0ffff0));
-        assert_eq!(gen.header.nonce, 2084524493);
-        assert_eq!(gen.header.block_hash().to_string(), "12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");
+        assert_eq!(gen.header.nonce, 385834689);
+        assert_eq!(gen.header.block_hash().to_string(), "d21da25e277bd20b7456087d69c5fee2ebc6091b410271b5cb0623c7d1e7d1b9");
     }
 
     #[test]
@@ -235,11 +237,11 @@ mod test {
         let gen = genesis_block(Network::Testnet);
         assert_eq!(gen.header.version, block::Version::ONE);
         assert_eq!(gen.header.prev_blockhash, Hash::all_zeros());
-        assert_eq!(gen.header.merkle_root.to_string(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
-        assert_eq!(gen.header.time, 1486949366);
+        assert_eq!(gen.header.merkle_root.to_string(), "a27b7d0a286e46fae3cb7e5b1eae6001fc1b15afee2f6a147291e7eb19746d5d");
+        assert_eq!(gen.header.time, 1394325759);
         assert_eq!(gen.header.bits, CompactTarget::from_consensus(0x1e0ffff0));
-        assert_eq!(gen.header.nonce, 293345);
-        assert_eq!(gen.header.block_hash().to_string(), "4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0");
+        assert_eq!(gen.header.nonce, 149343);
+        assert_eq!(gen.header.block_hash().to_string(), "707769464eb59fdd7b75cdbc5f0e72226345281852325c965b8ee1fd592fbf51");
     }
 
     #[test]
@@ -247,11 +249,11 @@ mod test {
         let gen = genesis_block(Network::Signet);
         assert_eq!(gen.header.version, block::Version::ONE);
         assert_eq!(gen.header.prev_blockhash, Hash::all_zeros());
-        assert_eq!(gen.header.merkle_root.to_string(), "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9");
-        assert_eq!(gen.header.time, 1598918400);
-        assert_eq!(gen.header.bits, CompactTarget::from_consensus(0x1e0377ae));
-        assert_eq!(gen.header.nonce, 52613770);
-        assert_eq!(gen.header.block_hash().to_string(), "501bfa0b999209eb9d3d3294747ee7f106be220a764404328f202b44b0e69563");
+        assert_eq!(gen.header.merkle_root.to_string(), "a27b7d0a286e46fae3cb7e5b1eae6001fc1b15afee2f6a147291e7eb19746d5d");
+        assert_eq!(gen.header.time, 1394325759);
+        assert_eq!(gen.header.bits, CompactTarget::from_consensus(0x1e0ffff0));
+        assert_eq!(gen.header.nonce, 149343);
+        assert_eq!(gen.header.block_hash().to_string(), "707769464eb59fdd7b75cdbc5f0e72226345281852325c965b8ee1fd592fbf51");
     }
 
     // The *_chain_hash tests are sanity/regression tests, they verify that the const byte array
@@ -302,7 +304,7 @@ mod test {
     #[test]
     fn mainnet_chain_hash_test_vector() {
         let got = ChainHash::using_genesis_block(Network::Bitcoin).to_string();
-        let want = "e2bf047e7e5a191aa4ef34d314979dc9986e0f19251edaba5940fd1fe365a712";
+        let want = "b9d1e7d1c72306cbb57102411b09c6ebe2fec5697d0856740bd27b275ea21dd2";
         assert_eq!(got, want);
     }
 }

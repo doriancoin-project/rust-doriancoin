@@ -695,15 +695,15 @@ impl NetworkValidation for NetworkUnchecked {
 /// use bitcoin::address::{NetworkUnchecked, NetworkChecked};
 ///
 /// // variant 1
-/// let address: Address<NetworkUnchecked> = "32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf".parse().unwrap();
+/// let address: Address<NetworkUnchecked> = "CHVMpjkgy7QdDiMcsFDos4yW7NuWxonPJB".parse().unwrap();
 /// let address: Address<NetworkChecked> = address.require_network(Network::Bitcoin).unwrap();
 ///
 /// // variant 2
-/// let address: Address = Address::from_str("32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf").unwrap()
+/// let address: Address = Address::from_str("CHVMpjkgy7QdDiMcsFDos4yW7NuWxonPJB").unwrap()
 ///                .require_network(Network::Bitcoin).unwrap();
 ///
 /// // variant 3
-/// let address: Address<NetworkChecked> = "32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf".parse::<Address<_>>()
+/// let address: Address<NetworkChecked> = "CHVMpjkgy7QdDiMcsFDos4yW7NuWxonPJB".parse::<Address<_>>()
 ///                .unwrap().require_network(Network::Bitcoin).unwrap();
 /// ```
 ///
@@ -717,15 +717,15 @@ impl NetworkValidation for NetworkUnchecked {
 /// ```
 /// # use std::str::FromStr;
 /// # use bitcoin::address::{Address, NetworkChecked};
-/// let address: Address<NetworkChecked> = Address::from_str("132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM")
+/// let address: Address<NetworkChecked> = Address::from_str("D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy")
 ///                .unwrap().assume_checked();
-/// assert_eq!(address.to_string(), "132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM");
+/// assert_eq!(address.to_string(), "D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy");
 /// ```
 ///
 /// ```ignore
 /// # use std::str::FromStr;
 /// # use bitcoin::address::{Address, NetworkChecked};
-/// let address: Address<NetworkUnchecked> = Address::from_str("132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM")
+/// let address: Address<NetworkUnchecked> = Address::from_str("D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy")
 ///                .unwrap();
 /// let s = address.to_string(); // does not compile
 /// ```
@@ -737,17 +737,17 @@ impl NetworkValidation for NetworkUnchecked {
 /// ```
 /// # use std::str::FromStr;
 /// # use bitcoin::address::{Address, NetworkUnchecked};
-/// let address: Address<NetworkUnchecked> = Address::from_str("132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM")
+/// let address: Address<NetworkUnchecked> = Address::from_str("D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy")
 ///                .unwrap();
-/// assert_eq!(format!("{:?}", address), "Address<NetworkUnchecked>(132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM)");
+/// assert_eq!(format!("{:?}", address), "Address<NetworkUnchecked>(D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy)");
 /// ```
 ///
 /// ```
 /// # use std::str::FromStr;
 /// # use bitcoin::address::{Address, NetworkChecked};
-/// let address: Address<NetworkChecked> = Address::from_str("132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM")
+/// let address: Address<NetworkChecked> = Address::from_str("D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy")
 ///                .unwrap().assume_checked();
-/// assert_eq!(format!("{:?}", address), "132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM");
+/// assert_eq!(format!("{:?}", address), "D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy");
 /// ```
 ///
 /// ### Relevant BIPs
@@ -841,12 +841,13 @@ impl<V: NetworkValidation> Address<V> {
             Network::Testnet | Network::Signet | Network::Regtest => SCRIPT_ADDRESS_PREFIX_TEST,
         };
         let bech32_hrp = match self.network {
-            Network::Bitcoin => "ltc",
-            Network::Testnet | Network::Signet => "tltc",
-            Network::Regtest => "rltc",
+            Network::Bitcoin => "dsv",
+            Network::Testnet | Network::Signet => "tdsv",
+            Network::Regtest => "rdsv",
         };
         let mweb_hrp = match self.network {
-            Network::Bitcoin | Network::Testnet | Network::Signet | Network::Regtest => "ltcmweb",
+            Network::Bitcoin => "dsvmweb",
+            Network::Testnet | Network::Signet | Network::Regtest => "tmweb",
         };
         let encoding =
             AddressEncoding { payload: &self.payload, p2pkh_prefix, p2sh_prefix, bech32_hrp, mweb_hrp };
@@ -984,7 +985,7 @@ impl Address {
     /// If you want to avoid allocation you can use alternate display instead:
     /// ```
     /// # use core::fmt::Write;
-    /// # const ADDRESS: &str = "BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4";
+    /// # const ADDRESS: &str = "DSV1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7K4QGL2L";
     /// # let address = ADDRESS.parse::<bitcoin::Address<_>>().unwrap().assume_checked();
     /// # let mut writer = String::new();
     /// # // magic trick to make error handling look better
@@ -1047,14 +1048,14 @@ impl Address<NetworkUnchecked> {
     /// use bitcoin::{Address, Network};
     /// use bitcoin::address::NetworkUnchecked;
     ///
-    /// let address: Address<NetworkUnchecked> = "2N83imGV3gPwBzKJQvWJ7cRUY2SpUyU6A5e".parse().unwrap();
+    /// let address: Address<NetworkUnchecked> = "QbQUtHMHhVzH8W4TYcL8h7uyAqGJs9ZHhf".parse().unwrap();
     /// assert!(address.is_valid_for_network(Network::Testnet));
     /// assert!(address.is_valid_for_network(Network::Regtest));
     /// assert!(address.is_valid_for_network(Network::Signet));
     ///
     /// assert_eq!(address.is_valid_for_network(Network::Bitcoin), false);
     ///
-    /// let address: Address<NetworkUnchecked> = "32iVBEu4dxkUQk9dJbZUiBiQdmypcEyJRf".parse().unwrap();
+    /// let address: Address<NetworkUnchecked> = "CHVMpjkgy7QdDiMcsFDos4yW7NuWxonPJB".parse().unwrap();
     /// assert!(address.is_valid_for_network(Network::Bitcoin));
     /// assert_eq!(address.is_valid_for_network(Network::Testnet), false);
     /// ```
@@ -1148,9 +1149,9 @@ impl FromStr for Address<NetworkUnchecked> {
         // try bech32
         let bech32_network = match find_bech32_prefix(s) {
             // note that upper or lowercase is allowed but NOT mixed case
-            "bc" | "BC" | "ltc" | "LTC" => Some(Network::Bitcoin),
-            "tb" | "TB" | "tltc" | "TLTC" => Some(Network::Testnet), // this may also be signet
-            "bcrt" | "BCRT" | "rltc" | "RLTC" => Some(Network::Regtest),
+            "dsv" | "DSV" => Some(Network::Bitcoin),
+            "tdsv" | "TDSV" => Some(Network::Testnet), // this may also be signet
+            "rdsv" | "RDSV" => Some(Network::Regtest),
             _ => None,
         };
         if let Some(network) = bech32_network {
@@ -1178,7 +1179,8 @@ impl FromStr for Address<NetworkUnchecked> {
         }
 
         let mweb_bech32_network = match find_bech32_prefix(s) {
-            "ltcmweb" | "LTCMWEB" => Some(Network::Bitcoin),
+            "dsvmweb" | "DSVMWEB" => Some(Network::Bitcoin),
+            "tmweb" | "TMWEB" => Some(Network::Testnet),
             _ => None,
         };
         if let Some(network) = mweb_bech32_network {
@@ -1291,7 +1293,7 @@ mod tests {
             addr.script_pubkey(),
             ScriptBuf::from_hex("76a914162c5ea71c0b23f5b9022ef047c4a86470a5b07088ac").unwrap()
         );
-        assert_eq!(&addr.to_string(), "LMFCHJAHxaRh4x19WUAaf6qgUkTNoP8yRG");
+        assert_eq!(&addr.to_string(), "D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy");
         assert_eq!(addr.address_type(), Some(AddressType::P2pkh));
         roundtrips(&addr);
     }
@@ -1300,7 +1302,7 @@ mod tests {
     fn test_p2pkh_from_key() {
         let key = "048d5141948c1702e8c95f438815794b87f706a8d4cd2bffad1dc1570971032c9b6042a0431ded2478b5c9cf2d81c124a5e57347a3c63ef0e7716cf54d613ba183".parse::<PublicKey>().unwrap();
         let addr = Address::p2pkh(&key, Bitcoin);
-        assert_eq!(&addr.to_string(), "LiXSVCwfffjsr21H5MeGmZ2uydPPFzzhHQ");
+        assert_eq!(&addr.to_string(), "DUSamFaUtRQ78DVidoeY3J8keYkQXdinrt");
 
         let key = "03df154ebfcf29d29cc10d5c2565018bce2d9edbab267c31d2caf44a63056cf99f"
             .parse::<PublicKey>()
@@ -1322,7 +1324,7 @@ mod tests {
             addr.script_pubkey(),
             ScriptBuf::from_hex("a914162c5ea71c0b23f5b9022ef047c4a86470a5b07087").unwrap(),
         );
-        assert_eq!(&addr.to_string(), "M9vQFWksNwMShpHKZJqDdMPFjkyGDRtxyn");
+        assert_eq!(&addr.to_string(), "CJV8b8CXkyAAiHDR25WCxbPwtfJWZQFNpL");
         assert_eq!(addr.address_type(), Some(AddressType::P2sh));
         roundtrips(&addr);
     }
@@ -1349,7 +1351,7 @@ mod tests {
             .parse::<PublicKey>()
             .unwrap();
         let addr = Address::p2wpkh(&key, Bitcoin).unwrap();
-        assert_eq!(&addr.to_string(), "bc1qvzvkjn4q3nszqxrv3nraga2r822xjty3ykvkuw");
+        assert_eq!(&addr.to_string(), "dsv1qvzvkjn4q3nszqxrv3nraga2r822xjty3a3dcay");
         assert_eq!(addr.address_type(), Some(AddressType::P2wpkh));
         roundtrips(&addr);
 
@@ -1365,7 +1367,7 @@ mod tests {
         let addr = Address::p2wsh(&script, Bitcoin);
         assert_eq!(
             &addr.to_string(),
-            "bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej"
+            "dsv1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxsnv4v84"
         );
         assert_eq!(addr.address_type(), Some(AddressType::P2wsh));
         roundtrips(&addr);
@@ -1378,7 +1380,7 @@ mod tests {
             .parse::<PublicKey>()
             .unwrap();
         let addr = Address::p2shwpkh(&key, Bitcoin).unwrap();
-        assert_eq!(&addr.to_string(), "MWPa5PnonJ8CSevkDYM66V8yDWf8nSur8v");
+        assert_eq!(&addr.to_string(), "CexJR1EUAKvvT7rqgK25Rj9fNQzPAJheDB");
         assert_eq!(addr.address_type(), Some(AddressType::P2sh));
         roundtrips(&addr);
 
@@ -1392,7 +1394,7 @@ mod tests {
         // stolen from Bitcoin transaction f9ee2be4df05041d0e0a35d7caa3157495ca4f93b233234c9967b6901dacf7a9
         let script = ScriptBuf::from_hex("522103e5529d8eaa3d559903adb2e881eb06c86ac2574ffa503c45f4e942e2a693b33e2102e5f10fcdcdbab211e0af6a481f5532536ec61a5fdbf7183770cf8680fe729d8152ae").unwrap();
         let addr = Address::p2shwsh(&script, Bitcoin);
-        assert_eq!(&addr.to_string(), "MCSyzGCqTczVFMvTn4VwpocbReQhXNC1kw");
+        assert_eq!(&addr.to_string(), "CM1iKseVqeoDFprZEqAwA3dHaYjwtK3277");
         assert_eq!(addr.address_type(), Some(AddressType::P2sh));
         roundtrips(&addr);
     }
@@ -1418,7 +1420,7 @@ mod tests {
             address: Address<V>,
         }
 
-        let addr_str = "33iFwdLuRpW1uK1RTRqsoi8rR4NpDzk66k";
+        let addr_str = "CJV8b8CXkyAAiHDR25WCxbPwtfJWZQFNpL";
         let unchecked = Address::from_str(addr_str).unwrap();
 
         assert_eq!(
@@ -1435,23 +1437,23 @@ mod tests {
     #[test]
     fn test_address_type() {
         let addresses = [
-            ("1QJVDzdqb1VpbDK7uDeyVXy9mR27CJiyhY", Some(AddressType::P2pkh)),
-            ("33iFwdLuRpW1uK1RTRqsoi8rR4NpDzk66k", Some(AddressType::P2sh)),
-            ("bc1qvzvkjn4q3nszqxrv3nraga2r822xjty3ykvkuw", Some(AddressType::P2wpkh)),
+            ("DUSamFaUtRQ78DVidoeY3J8keYkQXdinrt", Some(AddressType::P2pkh)),
+            ("CJV8b8CXkyAAiHDR25WCxbPwtfJWZQFNpL", Some(AddressType::P2sh)),
+            ("dsv1qvzvkjn4q3nszqxrv3nraga2r822xjty3a3dcay", Some(AddressType::P2wpkh)),
             (
-                "bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej",
+                "dsv1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxsnv4v84",
                 Some(AddressType::P2wsh),
             ),
             (
-                "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr",
+                "dsv1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqte5dxy",
                 Some(AddressType::P2tr),
             ),
             // Related to future extensions, addresses are valid but have no type
             // segwit v1 and len != 32
-            ("bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y", None),
+            ("dsv1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kex3aw4", None),
             // segwit v2
-            ("bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs", None),
-            ("ltcmweb1qqvc0wyuk2r39ed482htlt5zxcqfzkqps0eev3rlejnrem0n79z2jzq5lhlv79ffu4c3v4au9z3ewks8raaz9f8t04634akevlwfdgkmkkq2cvvue", Some(AddressType::Mweb))
+            ("dsv1zw508d6qejxtdg4y5r3zarvaryvu0fnqr", None),
+            ("dsvmweb1qqvc0wyuk2r39ed482htlt5zxcqfzkqps0eev3rlejnrem0n79z2jzq5lhlv79ffu4c3v4au9z3ewks8raaz9f8t04634akevlwfdgkmkkqpzf037", Some(AddressType::Mweb))
         ];
         for (address, expected_type) in &addresses {
             let addr = Address::from_str(address)
@@ -1464,16 +1466,16 @@ mod tests {
 
     #[test]
     fn test_bip173_350_vectors() {
-        // Test vectors valid under both BIP-173 and BIP-350
+        // Test vectors adapted for Doriancoin (dsv/tdsv HRP)
         let valid_vectors = [
-            ("BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4", "0014751e76e8199196d454941c45d1b3a323f1433bd6"),
-            ("tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7", "00201863143c14c5166804bd19203356da136c985678cd4d27a1b8c6329604903262"),
-            ("bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y", "5128751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6"),
-            ("BC1SW50QGDZ25J", "6002751e"),
-            ("bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs", "5210751e76e8199196d454941c45d1b3a323"),
-            ("tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy", "0020000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433"),
-            ("tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c", "5120000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433"),
-            ("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0", "512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798")
+            ("DSV1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7K4QGL2L", "0014751e76e8199196d454941c45d1b3a323f1433bd6"),
+            ("tdsv1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3qwh5tdr", "00201863143c14c5166804bd19203356da136c985678cd4d27a1b8c6329604903262"),
+            ("dsv1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kex3aw4", "5128751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6"),
+            ("DSV1SW50QRLW8DU", "6002751e"),
+            ("dsv1zw508d6qejxtdg4y5r3zarvaryvu0fnqr", "5210751e76e8199196d454941c45d1b3a323"),
+            ("tdsv1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvseszpu9ve", "0020000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433"),
+            ("tdsv1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesgkuv59", "5120000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433"),
+            ("dsv1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqlkduvg", "512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798")
         ];
         for vector in &valid_vectors {
             let addr: Address = vector.0.parse::<Address<_>>().unwrap().assume_checked();
@@ -1482,58 +1484,55 @@ mod tests {
         }
 
         let invalid_vectors = [
-            // 1. BIP-350 test vectors
             // Invalid human-readable part
             "tc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq5zuyut",
             // Invalid checksums (Bech32 instead of Bech32m):
-            "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqh2y7hd",
-            "tb1z0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqglt7rf",
-            "BC1S0XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ54WELL",
-            "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kemeawh",
-            "tb1q0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq24jc47",
+            "dsv1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqh2y7hd",
+            "tdsv1z0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqglt7rf",
+            "DSV1S0XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ54WELL",
+            "dsv1qw508d6qejxtdg4y5r3zarvary0c5xw7kemeawh",
+            "tdsv1q0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq24jc47",
             // Invalid character in checksum
-            "bc1p38j9r5y49hruaue7wxjce0updqjuyyx0kh56v8s25huc6995vvpql3jow4",
+            "dsv1p38j9r5y49hruaue7wxjce0updqjuyyx0kh56v8s25huc6995vvpql3jow4",
             // Invalid witness version
-            "BC130XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ7ZWS8R",
+            "DSV130XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ7ZWS8R",
             // Invalid program length (1 byte)
-            "bc1pw5dgrnzv",
+            "dsv1pw5dgrnzv",
             // Invalid program length (41 bytes)
-            "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav",
+            "dsv1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav",
             // Invalid program length for witness version 0 (per BIP141)
-            "BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
+            "DSV1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
             // Mixed case
-            "tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq47Zagq",
+            "tdsv1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq47Zagq",
             // zero padding of more than 4 bits
-            "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v07qwwzcrf",
+            "dsv1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v07qwwzcrf",
             // Non-zero padding in 8-to-5 conversion
-            "tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vpggkg4j",
+            "tdsv1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vpggkg4j",
             // Empty data section
-            "bc1gmk9yu",
-            // 2. BIP-173 test vectors
+            "dsv1gmk9yu",
             // Invalid human-readable part
             "tc1qw508d6qejxtdg4y5r3zarvary0c5xw7kg3g4ty",
             // Invalid checksum
-            "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5",
+            "dsv1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5",
             // Invalid witness version
-            "BC13W508D6QEJXTDG4Y5R3ZARVARY0C5XW7KN40WF2",
+            "DSV13W508D6QEJXTDG4Y5R3ZARVARY0C5XW7KN40WF2",
             // Invalid program length
-            "bc1rw5uspcuh",
+            "dsv1rw5uspcuh",
             // Invalid program length
-            "bc10w508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kw5rljs90",
+            "dsv10w508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kw5rljs90",
             // Invalid program length for witness version 0 (per BIP141)
-            "BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
+            "DSV1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
             // Mixed case
-            "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sL5k7",
+            "tdsv1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sL5k7",
             // zero padding of more than 4 bits
-            "bc1zw508d6qejxtdg4y5r3zarvaryvqyzf3du",
+            "dsv1zw508d6qejxtdg4y5r3zarvaryvqyzf3du",
             // Non-zero padding in 8-to-5 conversion
-            "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3pjxtptv",
-            // Final test for empty data section is the same as above in BIP-350
+            "tdsv1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3pjxtptv",
 
-            // 3. BIP-173 valid test vectors obsolete by BIP-350
-            "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx",
-            "BC1SW50QA3JX3S",
-            "bc1zw508d6qejxtdg4y5r3zarvaryvg6kdaj",
+            // BIP-173 valid test vectors obsolete by BIP-350
+            "dsv1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx",
+            "DSV1SW50QA3JX3S",
+            "dsv1zw508d6qejxtdg4y5r3zarvaryvg6kdaj",
         ];
         for vector in &invalid_vectors {
             assert!(vector.parse::<Address<_>>().is_err());
@@ -1546,11 +1545,11 @@ mod tests {
         use serde_json;
 
         let addr =
-            Address::from_str("132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM").unwrap().assume_checked();
+            Address::from_str("D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy").unwrap().assume_checked();
         let json = serde_json::to_value(&addr).unwrap();
         assert_eq!(
             json,
-            serde_json::Value::String("132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM".to_owned())
+            serde_json::Value::String("D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy".to_owned())
         );
         let into: Address = serde_json::from_value::<Address<_>>(json).unwrap().assume_checked();
         assert_eq!(addr.to_string(), into.to_string());
@@ -1624,7 +1623,7 @@ mod tests {
     #[test]
     fn test_qr_string() {
         for el in
-            ["132F25rTsvBdp9JzLLBHP5mvGY66i1xdiM", "33iFwdLuRpW1uK1RTRqsoi8rR4NpDzk66k"].iter()
+            ["D7ALZLo7BL5vM9Vb4vAqvqwX9fpQ4wKRiy", "CJV8b8CXkyAAiHDR25WCxbPwtfJWZQFNpL"].iter()
         {
             let addr =
                 Address::from_str(el).unwrap().require_network(Network::Bitcoin).expect("mainnet");
@@ -1632,8 +1631,8 @@ mod tests {
         }
 
         for el in [
-            "bcrt1q2nfxmhd4n3c8834pj72xagvyr9gl57n5r94fsl",
-            "bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej",
+            "rdsv1q2nfxmhd4n3c8834pj72xagvyr9gl57n5qn527m",
+            "dsv1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxsnv4v84",
         ]
         .iter()
         {
@@ -1704,7 +1703,7 @@ mod tests {
         let address = Address::p2tr(&secp, internal_key, None, Network::Bitcoin);
         assert_eq!(
             address.to_string(),
-            "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr"
+            "dsv1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqte5dxy"
         );
         assert_eq!(address.address_type(), Some(AddressType::P2tr));
         roundtrips(&address);
@@ -1712,7 +1711,7 @@ mod tests {
 
     #[test]
     fn test_is_related_to_pubkey_p2wpkh() {
-        let address_string = "bc1qhvd6suvqzjcu9pxjhrwhtrlj85ny3n2mqql5w4";
+        let address_string = "dsv1qhvd6suvqzjcu9pxjhrwhtrlj85ny3n2me8760l";
         let address = Address::from_str(address_string)
             .expect("address")
             .require_network(Network::Bitcoin)
@@ -1733,7 +1732,7 @@ mod tests {
 
     #[test]
     fn test_is_related_to_pubkey_p2shwpkh() {
-        let address_string = "3EZQk4F8GURH5sqVMLTFisD17yNeKa7Dfs";
+        let address_string = "CVLHPZ6kbd5Rtr3Uuz7askU6baJLexXx2J";
         let address = Address::from_str(address_string)
             .expect("address")
             .require_network(Network::Bitcoin)
@@ -1754,7 +1753,7 @@ mod tests {
 
     #[test]
     fn test_is_related_to_pubkey_p2pkh() {
-        let address_string = "1J4LVanjHMu3JkXbVrahNuQCTGCRRgfWWx";
+        let address_string = "DNCS2qjNamoKqkiCESaFvfZoLPvijxxf4T";
         let address = Address::from_str(address_string)
             .expect("address")
             .require_network(Network::Bitcoin)
@@ -1804,7 +1803,7 @@ mod tests {
 
         assert_eq!(
             address,
-            Address::from_str("bc1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4sfadf5e")
+            Address::from_str("dsv1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4s5a5827")
                 .expect("address")
                 .require_network(Network::Bitcoin)
                 .expect("mainnet")
@@ -1830,7 +1829,7 @@ mod tests {
 
         assert_eq!(
             address,
-            Address::from_str("bc1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4sfadf5e")
+            Address::from_str("dsv1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4s5a5827")
                 .expect("address")
                 .require_network(Network::Bitcoin)
                 .expect("mainnet")
@@ -1875,14 +1874,14 @@ mod tests {
     #[test]
     fn test_matches_script_pubkey() {
         let addresses = [
-            "1QJVDzdqb1VpbDK7uDeyVXy9mR27CJiyhY",
-            "1J4LVanjHMu3JkXbVrahNuQCTGCRRgfWWx",
-            "33iFwdLuRpW1uK1RTRqsoi8rR4NpDzk66k",
-            "3QBRmWNqqBGme9er7fMkGqtZtp4gjMFxhE",
-            "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
-            "bc1qvzvkjn4q3nszqxrv3nraga2r822xjty3ykvkuw",
-            "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr",
-            "bc1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4sfadf5e",
+            "DUSamFaUtRQ78DVidoeY3J8keYkQXdinrt",
+            "DNCS2qjNamoKqkiCESaFvfZoLPvijxxf4T",
+            "CJV8b8CXkyAAiHDR25WCxbPwtfJWZQFNpL",
+            "CexJR1EUAKvvT7rqgK25Rj9fNQzPAJheDB",
+            "dsv1zw508d6qejxtdg4y5r3zarvaryvu0fnqr",
+            "dsv1qvzvkjn4q3nszqxrv3nraga2r822xjty3a3dcay",
+            "dsv1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqte5dxy",
+            "dsv1pgllnmtxs0g058qz7c6qgaqq4qknwrqj9z7rqn9e2dzhmcfmhlu4s5a5827",
         ];
         for addr in &addresses {
             let addr = Address::from_str(addr).unwrap().require_network(Network::Bitcoin).unwrap();
@@ -1894,3 +1893,4 @@ mod tests {
         }
     }
 }
+
